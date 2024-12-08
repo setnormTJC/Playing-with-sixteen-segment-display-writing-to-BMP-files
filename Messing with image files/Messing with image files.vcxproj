@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{cf42b25d-9917-4757-910c-90b6505a66b7}</ProjectGuid>
-    <RootNamespace>Chessy</RootNamespace>
+    <ProjectGuid>{f0f21258-4712-47f8-9ee5-4786e6fa5d48}</ProjectGuid>
+    <RootNamespace>Messingwithimagefiles</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,11 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Chess-y.cpp" />
-    <ClCompile Include="ChessGame.cpp" />
+    <ClCompile Include="Messing with image files.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChessGame.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="stb_image_write.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
