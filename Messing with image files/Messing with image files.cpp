@@ -4,12 +4,13 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include"stb_image_write.h"
 
-#include <iostream>
+#include"ImageRecord.h"
 
 #include<vector> 
 
@@ -19,8 +20,11 @@
 
 #include<chrono> 
 
+
+
 using std::cout; 
 using std::vector; 
+using std::string; 
 using std::to_string; 
 
 
@@ -126,67 +130,52 @@ void moveKnightAbout(unsigned char* emptyBoardImagePointer,
 }
 
 
+
+void freeImages(ImageRecord& theBoardImageRecord, vector<ImageRecord>& thePiecesImageRecords)
+{
+    stbi_image_free(theBoardImageRecord.imagePtr);
+    for (const auto& currentImageRecord : thePiecesImageRecords)
+    {
+        stbi_image_free(currentImageRecord.imagePtr);
+    }
+}
+
+void writeCompositeImage(const char* compositeFilePath, const ImageRecord& backgroundImageRecord, 
+    const vector<unsigned char>& compositeImageArray)
+{
+    stbi_write_png(compositeFilePath,
+        backgroundImageRecord.width, backgroundImageRecord.height, backgroundImageRecord.channelCount,
+        compositeImageArray.data(),
+        (backgroundImageRecord.width * backgroundImageRecord.channelCount));
+
+    //const char* bmpFileName = "composite.bmp"; 
+
+    //stbi_write_bmp(bmpFileName,
+    //    backgroundImageRecord.width, backgroundImageRecord.height, backgroundImageRecord.channelCount,
+    //    compositeImageArray.data());
+    //no obvious diff between result for bmp and png here 
+}
+
 int main()
 {
-    int emptyBoardImageWidth, emptyBoardImageHeight, emptyBoardChannelCount; 
-    int blackPawnImageWidth, blackPawnImageHeight, blackPawnChannelCount;
-    int whiteKnightImageWidth, whiteKnightImageHeight, whiteKnightChannelCount; 
+    string filePathOfTheBoard = "C:/Users/snorm/source/repos/Chessy-Dec7_2024/Messing with image files/chessImageResources/emptyChessBoard.jpg";
 
-    unsigned char* emptyBoardImagePointer = stbi_load("chessImageResources/emptyChessBoard.jpg", &emptyBoardImageWidth, 
-                                                &emptyBoardImageHeight, &emptyBoardChannelCount, 0);
+    auto theBoardImageRecord = getImageRecordFromFile(filePathOfTheBoard);
 
-    auto blackPawnImagePointer = stbi_load("chessImageResources/blackPawn.jpg", &blackPawnImageWidth, &blackPawnImageHeight,
-        &blackPawnChannelCount, 0);
-
-    auto whiteKnightImagePointer = stbi_load("chessImageResources/whiteKnight.jpg", &whiteKnightImageWidth, &whiteKnightImageHeight,
-        &whiteKnightChannelCount, 0);
-
-    if (emptyBoardImagePointer == nullptr 
-        ||
-        blackPawnImagePointer == nullptr
-        ||
-        whiteKnightImagePointer == nullptr)
-    {
-        std::cout << "Couldn't file one of the files\n";
-        return 1;
-    }
-  
-
-    //begin making new (composite) image: 
-    vector<unsigned char> newImageArray(emptyBoardImageWidth * emptyBoardImageHeight * emptyBoardChannelCount);
-
-    //write first (background) image into newImage 
-    std::copy(emptyBoardImagePointer,
-        emptyBoardImagePointer + (emptyBoardChannelCount * emptyBoardImageHeight * emptyBoardImageWidth),
-        newImageArray.begin());
-
-    //scale the black pawn image (hardcoding scaling for now): 
-    const unsigned int SCALING_FACTOR = 3;
-
-    auto scaledBlackPawnImagePointer = scaleImage(blackPawnImagePointer, blackPawnImageWidth, blackPawnImageHeight, blackPawnChannelCount,
-        blackPawnImageWidth / SCALING_FACTOR, blackPawnImageHeight / SCALING_FACTOR);
-
-
-    //write second (foreground) image:
-    movePawnAbout(emptyBoardImagePointer, emptyBoardChannelCount, emptyBoardImageHeight, emptyBoardImageWidth,
-        newImageArray, scaledBlackPawnImagePointer, blackPawnImageWidth, SCALING_FACTOR, blackPawnImageHeight, 
-        blackPawnChannelCount);
-
-
-    //write third image (scaling later): 
-    moveKnightAbout(emptyBoardImagePointer, emptyBoardChannelCount, emptyBoardImageHeight, emptyBoardImageWidth,
-        newImageArray, whiteKnightImagePointer, whiteKnightImageWidth, whiteKnightImageHeight, whiteKnightChannelCount);
-
-
-
-
-    stbi_image_free(emptyBoardImagePointer);
-    stbi_image_free(blackPawnImagePointer);
-    stbi_image_free(whiteKnightImagePointer);
-
-    //cout << x << "x" << y << " with channel count = " << channels << "\n";
+    auto thePiecesImageRecords = readImageFilesInFolder("/chessImageResources/chessPieceImages");
     
+    
+    auto compositeImageArray = makeCompositeImage(theBoardImageRecord, thePiecesImageRecords); 
+
+    const char* compositeFilePath = "composite.png";
+    writeCompositeImage(compositeFilePath, theBoardImageRecord, compositeImageArray);
 
 
-    //std::cout << "Hello World!\n";
+    system(compositeFilePath); 
+
+
+    freeImages(theBoardImageRecord, thePiecesImageRecords); 
+    //free willies:
+
+
 }
