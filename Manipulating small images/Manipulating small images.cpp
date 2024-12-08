@@ -54,7 +54,7 @@ int main()
 {
     //writeSomeImage();
 
-    const unsigned int BACKGROUND_IMAGE_WIDTH = 40; 
+    const unsigned int BACKGROUND_IMAGE_WIDTH = 40; //NOTE: stack overflow will occur if these get too large
     const unsigned int BACKGROUND_IMAGE_HEIGHT = 20;
     const unsigned int BACKGROUND_IMAGE_CHANNELS = 3;
 
@@ -92,9 +92,14 @@ int main()
     //cout << "here" << (void*)bwData[0] << "\n"; //0000 000FF (255) -> if x86 (16 digits if x64) 
     //cout << "here" << (void*)bwData[3] << "\n"; //FF (255) 
 
-    unsigned char foreground_image_data[] = 
+    const int FOREGROUND_IMAGE_WIDTH = 4; 
+    const int FORGROUND_IMAGE_HEIGHT = 2; 
+    const int FOREGROUND_IMAGE_CHANNELS = 3; 
+
+    unsigned char foreground_image_data[FOREGROUND_IMAGE_WIDTH*FORGROUND_IMAGE_HEIGHT*FOREGROUND_IMAGE_CHANNELS] = 
     {
-        255, 0, 0,          0, 255, 0,          0, 0, 255 //3 pixels -> red, green, and blue
+        255, 0, 0,          0, 255, 0,          0, 0, 255,      128, 128,128, 
+        255, 255, 0,        0, 255, 255,        255, 0, 255,    255, 0, 0
     };
 
     //cout << sizeof(foregroundImage) << "\n";
@@ -102,14 +107,30 @@ int main()
 
 
     assert(sizeof(background_image_data) > sizeof(foreground_image_data));
-    //overwrite top left (index = 0) pixel of bwData with red pixel 
-    for (int channel = 0; channel < BACKGROUND_IMAGE_CHANNELS; ++channel)
-    {
-        ptrToBackgroundImageData[channel] = ptr_to_foreground_image_data[channel]; 
+    int verticalShift = 1; 
+    int horizontalShift = 1; 
 
-        //bwData[channel] = singleRedPixel[channel];  
-        //alternative equivalent (I'm trying to stick with stb_image approach)
+    for (int row = 0; row < FORGROUND_IMAGE_HEIGHT; ++row)
+    {
+        for (int col = 0; col < FOREGROUND_IMAGE_WIDTH; ++col)
+        {
+            for (int channel = 0; channel < FOREGROUND_IMAGE_CHANNELS; ++channel)
+            {
+                int foregroundIndex = ((row * FOREGROUND_IMAGE_WIDTH) + col) * FOREGROUND_IMAGE_CHANNELS + channel;
+                
+                //calc below allows for horizontal and vertical shift: 
+                int backgroundIndex = 
+                             ((row + verticalShift)* BACKGROUND_IMAGE_WIDTH + 
+                                    (col+horizontalShift)) * BACKGROUND_IMAGE_CHANNELS + channel; 
+                
+                assert(backgroundIndex < sizeof(background_image_data));
+
+                ptrToBackgroundImageData[backgroundIndex] = ptr_to_foreground_image_data[foregroundIndex];
+
+            }
+        }
     }
+
 
     stbi_write_png("modifiedImage.png",
         BACKGROUND_IMAGE_WIDTH, BACKGROUND_IMAGE_HEIGHT, BACKGROUND_IMAGE_CHANNELS,
