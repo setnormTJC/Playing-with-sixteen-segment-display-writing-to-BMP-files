@@ -9,10 +9,10 @@
 #include"../Messing with image files/stb_image.h"
 
 #include"../Messing with image files/ImageRecord.h"
-
 #include <iostream>
 
 #include<cassert>
+
 
 void writeSomeImage()
 {
@@ -49,21 +49,30 @@ void writeSomeImage()
 
 }
 
+//struct MyColor
+//{
+//    int 
+//};
 
-int main()
+ImageRecord makeBgrdImage()
 {
-    //writeSomeImage();
-
-    const unsigned int BACKGROUND_IMAGE_WIDTH = 40; //NOTE: stack overflow will occur if these get too large
-    const unsigned int BACKGROUND_IMAGE_HEIGHT = 20;
+    const unsigned int BACKGROUND_IMAGE_WIDTH = 512; //NOTE: stack overflow will occur if these get too large
+    const unsigned int BACKGROUND_IMAGE_HEIGHT = 512;
     const unsigned int BACKGROUND_IMAGE_CHANNELS = 3;
 
-    unsigned char background_image_data[BACKGROUND_IMAGE_WIDTH * BACKGROUND_IMAGE_HEIGHT * BACKGROUND_IMAGE_CHANNELS];/* =
-    {
-        0, 0, 0,            255, 255, 255,          0, 0, 0,            255, 255, 255,
-        255, 255, 255,      0, 0, 0,            255, 255, 255,          0, 0, 0,             
-        0, 0, 0,            255, 255, 255,          0, 0, 0,            255, 255, 255    
-    };*/
+    unsigned char background_image_data[BACKGROUND_IMAGE_WIDTH * BACKGROUND_IMAGE_HEIGHT * BACKGROUND_IMAGE_CHANNELS];
+
+    unsigned char* ptrToBackgroundImageData = background_image_data;
+    //uncomment below if reaching large enough image for stack overflow: 
+   //     new unsigned char [BACKGROUND_IMAGE_WIDTH * BACKGROUND_IMAGE_HEIGHT * BACKGROUND_IMAGE_CHANNELS];
+
+    //example below of 4 x 3 black and white alterating 
+    //unsigned char background_image_data[BACKGROUND_IMAGE_WIDTH * BACKGROUND_IMAGE_HEIGHT * BACKGROUND_IMAGE_CHANNELS];/* =
+    //{
+    //    0, 0, 0,            255, 255, 255,          0, 0, 0,            255, 255, 255,
+    //    255, 255, 255,      0, 0, 0,            255, 255, 255,          0, 0, 0,             
+    //    0, 0, 0,            255, 255, 255,          0, 0, 0,            255, 255, 255    
+    //};*/
 
     for (int row = 0; row < BACKGROUND_IMAGE_HEIGHT; ++row)
     {
@@ -74,7 +83,7 @@ int main()
                 //int index = row * col * channel; 
                 int index = ((row * BACKGROUND_IMAGE_WIDTH) + col) * BACKGROUND_IMAGE_CHANNELS + channel;
                 //cout << index << "\n";
-                
+
                 if ((row + col) % 2 == 0)
                 {
                     background_image_data[index] = 0;
@@ -82,23 +91,30 @@ int main()
 
                 else
                 {
-                    background_image_data[index] = 255; 
+                    background_image_data[index] = 255;
                 }
             }
         }
     }
-    unsigned char* ptrToBackgroundImageData = background_image_data;
 
-    //cout << "here" << (void*)bwData[0] << "\n"; //0000 000FF (255) -> if x86 (16 digits if x64) 
-    //cout << "here" << (void*)bwData[3] << "\n"; //FF (255) 
+    ImageRecord bgrdImageRecord{ "background image",
+        BACKGROUND_IMAGE_WIDTH, BACKGROUND_IMAGE_HEIGHT, BACKGROUND_IMAGE_CHANNELS,
+        background_image_data};
+    
 
-    const int FOREGROUND_IMAGE_WIDTH = 4; 
-    const int FORGROUND_IMAGE_HEIGHT = 2; 
-    const int FOREGROUND_IMAGE_CHANNELS = 3; 
+    return bgrdImageRecord;
+}
 
-    unsigned char foreground_image_data[FOREGROUND_IMAGE_WIDTH*FORGROUND_IMAGE_HEIGHT*FOREGROUND_IMAGE_CHANNELS] = 
+ImageRecord makeFirstForegroundImage()
+{
+    const int FOREGROUND_IMAGE_WIDTH = 4;
+    const int FOREGROUND_IMAGE_HEIGHT = 2;
+    const int FOREGROUND_IMAGE_CHANNELS = 3;
+
+
+    unsigned char foreground_image_data[FOREGROUND_IMAGE_WIDTH * FOREGROUND_IMAGE_HEIGHT * FOREGROUND_IMAGE_CHANNELS] =
     {
-        255, 0, 0,          0, 255, 0,          0, 0, 255,      128, 128,128, 
+        255, 0, 0,          0, 255, 0,          0, 0, 255,      128, 128,128,
         255, 255, 0,        0, 255, 255,        255, 0, 255,    255, 0, 0
     };
 
@@ -106,38 +122,104 @@ int main()
     unsigned char* ptr_to_foreground_image_data = foreground_image_data;
 
 
-    assert(sizeof(background_image_data) > sizeof(foreground_image_data));
-    int verticalShift = 1; 
-    int horizontalShift = 1; 
+    ImageRecord foregroundImageRecord{ "foreground image",
+        FOREGROUND_IMAGE_WIDTH, FOREGROUND_IMAGE_WIDTH, FOREGROUND_IMAGE_CHANNELS,
+        ptr_to_foreground_image_data };
 
-    for (int row = 0; row < FORGROUND_IMAGE_HEIGHT; ++row)
+    return foregroundImageRecord;
+
+}
+
+ImageRecord makeSmileyForegroundImage()
+{
+
+    unsigned char smileyData[4 * 5 * 3] =
     {
-        for (int col = 0; col < FOREGROUND_IMAGE_WIDTH; ++col)
-        {
-            for (int channel = 0; channel < FOREGROUND_IMAGE_CHANNELS; ++channel)
-            {
-                int foregroundIndex = ((row * FOREGROUND_IMAGE_WIDTH) + col) * FOREGROUND_IMAGE_CHANNELS + channel;
-                
-                //calc below allows for horizontal and vertical shift: 
-                int backgroundIndex = 
-                             ((row + verticalShift)* BACKGROUND_IMAGE_WIDTH + 
-                                    (col+horizontalShift)) * BACKGROUND_IMAGE_CHANNELS + channel; 
-                
-                assert(backgroundIndex < sizeof(background_image_data));
+        255, 255, 0,        255, 255, 0,        255, 255, 0,        255, 255, 0, //yellow forehead
+        255, 255, 0,        255, 0, 255,        255, 0, 255,        255, 255, 0, //purple (magenta) eyes (and lips on last row)
+        255, 255, 0,        255, 255, 0,        255, 255, 0,        255, 255, 0,
+        255, 0, 255,        255, 255, 0,        255, 255, 0,        255,  0, 255,
+        255, 0, 255,        255, 0, 255,        255, 0, 255,        255, 0, 255,
+    };
 
-                ptrToBackgroundImageData[backgroundIndex] = ptr_to_foreground_image_data[foregroundIndex];
+    unsigned char* ptrToSmileyData = smileyData; 
+
+    ImageRecord smilyForegroundImageRecord{ "smiley foreground image",
+        4, 5, 3, ptrToSmileyData };
+
+    return smilyForegroundImageRecord;
+}
+
+
+
+void addForegroundImageToBgrdImage(int verticalShift, int horizontalShift, 
+    ImageRecord& backgroundImageRecord, 
+    const ImageRecord& foregroundImageRecord)
+{
+
+
+    assert(backgroundImageRecord.imageSize > foregroundImageRecord.imageSize);
+    //int verticalShift = 1;
+    //int horizontalShift = 1;
+
+    for (int row = 0; row < foregroundImageRecord.height; ++row)
+    {
+        for (int col = 0; col < foregroundImageRecord.width; ++col)
+        {
+            for (int channel = 0; channel < foregroundImageRecord.channelCount; ++channel)
+            {
+                int foregroundIndex = ((row * foregroundImageRecord.width) + col) * foregroundImageRecord.channelCount + channel;
+
+                //calc below allows for horizontal and vertical shift: 
+                int backgroundIndex =
+                    ((row + verticalShift) * backgroundImageRecord.width +
+                        (col + horizontalShift)) * backgroundImageRecord.channelCount + channel;
+                //shifts may result in going out of bounds ...
+                assert(backgroundIndex < backgroundImageRecord.imageSize);
+                
+
+                backgroundImageRecord.imagePtr[backgroundIndex] = foregroundImageRecord.imagePtr[foregroundIndex];
+
+                //ptrToBackgroundImageData[backgroundIndex] = ptr_to_foreground_image_data[foregroundIndex];
 
             }
         }
     }
 
+}
+
+int main()
+{
+    //writeSomeImage();
+
+    ImageRecord backgroundImageRecord = makeBgrdImage(); 
+
+    ImageRecord forgroundImageRecord = makeFirstForegroundImage(); 
+
+    //shift 1 pixel down and 1 pixel right: 
+    addForegroundImageToBgrdImage(1, 1, backgroundImageRecord, forgroundImageRecord);
+
+    ImageRecord smileyForegroundImageRecord = makeSmileyForegroundImage(); 
+    
+    ImageRecord chessboardImageRecord = getImageRecordFromFile("../Messing with image files/chessImageResources/emptyChessBoard.jpg");
+
+
+    addForegroundImageToBgrdImage(100, 100, backgroundImageRecord, smileyForegroundImageRecord); 
+
+    addForegroundImageToBgrdImage(400, 400, backgroundImageRecord, smileyForegroundImageRecord);
+
+    addForegroundImageToBgrdImage(100, 100, backgroundImageRecord, chessboardImageRecord);
 
     stbi_write_png("modifiedImage.png",
-        BACKGROUND_IMAGE_WIDTH, BACKGROUND_IMAGE_HEIGHT, BACKGROUND_IMAGE_CHANNELS,
-        ptrToBackgroundImageData,
-        BACKGROUND_IMAGE_WIDTH * BACKGROUND_IMAGE_CHANNELS);
+        backgroundImageRecord.width, backgroundImageRecord.height, backgroundImageRecord.channelCount,
+        backgroundImageRecord.imagePtr,
+        backgroundImageRecord.width * backgroundImageRecord.channelCount);
+    
+    //delete[] doubledSmiley.imagePtr;
 
     system("modifiedImage.png"); 
 
+
+    //delete [] ptrToBackgroundImageData;
 }
 

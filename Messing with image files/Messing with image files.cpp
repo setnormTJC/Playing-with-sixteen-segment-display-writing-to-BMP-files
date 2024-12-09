@@ -52,6 +52,7 @@ unsigned char* scaleImage(unsigned char* img, int width, int height, int channel
             for (int c = 0; c < channels; ++c) {
                 int srcX = x * width / newWidth;
                 int srcY = y * height / newHeight;
+
                 int srcIndex = (srcY * width + srcX) * channels + c;
                 int dstIndex = (y * newWidth + x) * channels + c;
                 scaledImg[dstIndex] = img[srcIndex];
