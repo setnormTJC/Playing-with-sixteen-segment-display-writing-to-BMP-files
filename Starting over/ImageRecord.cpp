@@ -5,6 +5,7 @@
 #include<iostream> 
 #include<iomanip> 
 
+
 using std::setw;
 
 
@@ -31,7 +32,7 @@ ImageRecord::~ImageRecord()
 
 #pragma endregion 
 
-#pragma region Non-member functions that manipulate ImageRecord objects
+#pragma region Non-member functions that manipulate (or create) ImageRecord objects
 /*Non-member functions*/
 std::ostream& operator<<(std::ostream& os, const ImageRecord& imageRecord)
 {
@@ -76,7 +77,7 @@ ImageRecord getImageRecordFromFile(const string& filepath)
 }
 
 
-
+/*Note: this will change the current directory*/
 vector<ImageRecord> readImageFilesInFolder(const std::string& baseFolderName)
 {
     using namespace std::filesystem;
@@ -107,55 +108,77 @@ vector<ImageRecord> readImageFilesInFolder(const std::string& baseFolderName)
     return arrayOfImageRecords;
 }
 
-
-vector<unsigned char> makeCompositeImage(ImageRecord& backgroundImageRecord, vector<ImageRecord>& foregroundImageRecords)
+void addForegroundImageToBgrdImage(int verticalShift, int horizontalShift,
+    ImageRecord& backgroundImageRecord,
+    const ImageRecord& foregroundImageRecord)
 {
-    //    unsigned int BGRD_IMAGE_SIZE = backgroundImageRecord.channelCount * backgroundImageRecord.height * backgroundImageRecord.width;
-
-    unsigned int BGRD_IMAGE_SIZE = backgroundImageRecord.imageSize;
-
-    vector<unsigned char> compositeImageArray(BGRD_IMAGE_SIZE);
-
-    //first, copy the bgrd image to the composite image: 
-    std::copy(backgroundImageRecord.imagePtr,
-        backgroundImageRecord.imagePtr + (BGRD_IMAGE_SIZE),
-        compositeImageArray.begin());
 
 
-    //for (unsigned int i = 0; i < BGRD_IMAGE_SIZE / 3; ++i)
-    //{
-    //    compositeImageData.at(i) = 255; //sets to white 
-    //    //compositeImageData.at(i) = 0; //sets to black
-    //    //cout << (void*)compositeImageData.at(i) << "\n";
-    //}
+    assert(backgroundImageRecord.imageSize > foregroundImageRecord.imageSize);
+    //int verticalShift = 1;
+    //int horizontalShift = 1;
 
-    ImageRecord firstForegroundImage = foregroundImageRecords.at(0);
-    ImageRecord secondForegroundImage = foregroundImageRecords.at(1);
-
-    cout << backgroundImageRecord << "\n";
-    cout << firstForegroundImage << "\n";
-    cout << secondForegroundImage << "\n";
-
-    //assert foreground image size < bgrd image size? 
-    for (int col = 0; col < firstForegroundImage.width; ++col)
+    for (int row = 0; row < foregroundImageRecord.height; ++row)
     {
-        for (int row = 0; row < firstForegroundImage.height; ++row)
+        for (int col = 0; col < foregroundImageRecord.width; ++col)
         {
-            for (int channel = 0; channel < firstForegroundImage.channelCount; ++channel)
+            for (int channel = 0; channel < foregroundImageRecord.channelCount; ++channel)
             {
-                int index = col * row * channel;
-                compositeImageArray[index] = firstForegroundImage.imagePtr[index];
+                int foregroundIndex = ((row * foregroundImageRecord.width) + col) * foregroundImageRecord.channelCount + channel;
+
+                //calc below allows for horizontal and vertical shift: 
+                int backgroundIndex =
+                    ((row + verticalShift) * backgroundImageRecord.width +
+                        (col + horizontalShift)) * backgroundImageRecord.channelCount + channel;
+                //shifts may result in going out of bounds ...
+                assert(backgroundIndex < backgroundImageRecord.imageSize);
+
+
+                backgroundImageRecord.imagePtr[backgroundIndex] = foregroundImageRecord.imagePtr[foregroundIndex];
+
+                //ptrToBackgroundImageData[backgroundIndex] = ptr_to_foreground_image_data[foregroundIndex];
+
             }
         }
-        //compositeImageArray[i] = firstForegroundImage.imagePtr[i]; 
-
     }
-
-
-
-    return compositeImageArray;
-
 
 }
 
+
+map<string, ImageFileCoordinate> mapImageFileCoordinatesToChessPositions()
+{
+
+    int currentY = 40; 
+    int currentX = 40; 
+
+    map<string, ImageFileCoordinate> theMap; 
+    
+    for (int row = 8; row > 0; --row)
+    {
+        for (char col = 'A'; col < 'I'; ++col)
+        {
+            ImageFileCoordinate currentCoordinate{ currentX, currentY };
+            //ImageChessPosition currentPosition{ row, col };
+            
+            string currentPosition{}; 
+            currentPosition += col; 
+            currentPosition += std::to_string(row); 
+
+            theMap.insert({ currentPosition, currentCoordinate });
+
+            currentX += 90; 
+        }
+        //RESET x coordinate to correspond to A file (column A) 
+        currentX = 40;
+        //INCREMENT y coordinate to next rank (row) 
+        currentY += 90; 
+    }
+
+
+    return theMap;
+}
+
+
 #pragma endregion
+
+

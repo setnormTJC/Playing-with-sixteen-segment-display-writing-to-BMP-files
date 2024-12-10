@@ -265,7 +265,7 @@ void BMPImage::drawCircle(int radius, int xCenter, int yCenter, const Color& col
 
 #pragma region SixteenSegmentDisplay function implementations
 
-SixteenSegmentDisplay::SixteenSegmentDisplay(const Point& bottomLeft, const Point& topRight)
+SixteenSegmentDisplay::SixteenSegmentDisplay(const ImageFileCoordinate& bottomLeft, const ImageFileCoordinate& topRight)
 	:bottomLeft(bottomLeft), topRight(topRight)
 {
 	a1 = Segment

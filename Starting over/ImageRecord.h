@@ -6,10 +6,16 @@
 #include<vector> 
 #include<filesystem>
 
+#include<cassert> 
+
+#include<map> 
+
+
 
 using std::vector;
 using std::string;
 using std::cout;
+using std::map; 
 
 struct ImageRecord
 {
@@ -36,4 +42,23 @@ ImageRecord getImageRecordFromFile(const string& filepath);
 
 vector<ImageRecord> readImageFilesInFolder(const std::string& baseFolderName);
 
-vector<unsigned char> makeCompositeImage(ImageRecord& backgroundImageRecord, vector<ImageRecord>& foregroundImageRecords);
+
+void addForegroundImageToBgrdImage(int verticalShift, int horizontalShift,
+    ImageRecord& backgroundImageRecord,
+    const ImageRecord& foregroundImageRecord);
+
+
+struct ImageFileCoordinate
+{
+    int x = 0, y = 0;
+
+    ImageFileCoordinate() {}; 
+    ImageFileCoordinate(int x, int y)
+        :x(x), y(y)
+    {
+
+    };
+};
+
+/*VERY specific method - only works for the current (Dec 9, 2024) chessboard image I am using*/
+map<string, ImageFileCoordinate> mapImageFileCoordinatesToChessPositions();

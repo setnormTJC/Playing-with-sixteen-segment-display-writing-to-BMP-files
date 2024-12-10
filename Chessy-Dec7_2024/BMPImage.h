@@ -5,17 +5,17 @@
 
 using std::vector;
 
-struct Point
+struct ImageFileCoordinate
 {
 	int x, y;
 
-	Point()
+	ImageFileCoordinate()
 	{
 		x = 0;
 		y = 0;
 	}
 
-	Point(int x, int y)
+	ImageFileCoordinate(int x, int y)
 		:x(x), y(y)
 	{
 
@@ -37,15 +37,15 @@ struct Color
 
 struct Segment
 {
-	Point startPoint{ 0,0 };
-	Point finishPoint{ 0,0 };
+	ImageFileCoordinate startPoint{ 0,0 };
+	ImageFileCoordinate finishPoint{ 0,0 };
 
 	Segment()
 	{
 
 	}
 
-	Segment(Point startPoint, Point finishPoint)
+	Segment(ImageFileCoordinate startPoint, ImageFileCoordinate finishPoint)
 		:startPoint(startPoint), finishPoint(finishPoint)
 	{
 
@@ -58,10 +58,10 @@ struct Segment
 class  SixteenSegmentDisplay
 {
 public:
-	Point bottomLeft, topRight;
+	ImageFileCoordinate bottomLeft, topRight;
 
 
-	SixteenSegmentDisplay(const Point& bottomLeft, const Point& topRight);
+	SixteenSegmentDisplay(const ImageFileCoordinate& bottomLeft, const ImageFileCoordinate& topRight);
 
 private: //making private to avoid overwhelming amount of visible members
 	int x0 = bottomLeft.x;
@@ -150,7 +150,7 @@ private:
 	|7 | 8 | 9|
 	===========
 	*/
-	std::map<int, Point> gridMap =
+	std::map<int, ImageFileCoordinate> gridMap =
 	{
 		{1, {0, width / 3} },
 		{2, {height / 3, width / 3} },

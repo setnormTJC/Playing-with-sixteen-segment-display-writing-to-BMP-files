@@ -14,72 +14,54 @@
 #include<cassert>
 
 #include<map> 
+#include "ChessGame.h"
 
 using std::map; 
-
-void addForegroundImageToBgrdImage(int verticalShift, int horizontalShift,
-    ImageRecord& backgroundImageRecord,
-    const ImageRecord& foregroundImageRecord)
-{
+using std::cout; 
+using std::cin; 
 
 
-    assert(backgroundImageRecord.imageSize > foregroundImageRecord.imageSize);
-    //int verticalShift = 1;
-    //int horizontalShift = 1;
-
-    for (int row = 0; row < foregroundImageRecord.height; ++row)
-    {
-        for (int col = 0; col < foregroundImageRecord.width; ++col)
-        {
-            for (int channel = 0; channel < foregroundImageRecord.channelCount; ++channel)
-            {
-                int foregroundIndex = ((row * foregroundImageRecord.width) + col) * foregroundImageRecord.channelCount + channel;
-
-                //calc below allows for horizontal and vertical shift: 
-                int backgroundIndex =
-                    ((row + verticalShift) * backgroundImageRecord.width +
-                        (col + horizontalShift)) * backgroundImageRecord.channelCount + channel;
-                //shifts may result in going out of bounds ...
-                assert(backgroundIndex < backgroundImageRecord.imageSize);
-
-
-                backgroundImageRecord.imagePtr[backgroundIndex] = foregroundImageRecord.imagePtr[foregroundIndex];
-
-                //ptrToBackgroundImageData[backgroundIndex] = ptr_to_foreground_image_data[foregroundIndex];
-
-            }
-        }
-    }
-
-}
-
-
-struct Point
-{
-    int x, y; 
-
-    Point(int x, int y)
-        :x(x), y(y)
-    {
-
-    };
-};
-
-/*Ex: A8 maps well to vertical and horizontal shift of ~90 pixels each for my current board size and piece size*/
-map<string, Point> mappy =
-{
-    {"A8", Point{40, 40}},
-    { "B7", Point{130, 130}},
-    { "C6", Point{220, 220}}
-};
-
-
-
-//vector<ImageRecord> getAllImageAssets()
+//void addForegroundImageToBgrdImage(int verticalShift, int horizontalShift,
+//    ImageRecord& backgroundImageRecord,
+//    const ImageRecord& foregroundImageRecord)
 //{
+//
+//
+//    assert(backgroundImageRecord.imageSize > foregroundImageRecord.imageSize);
+//    //int verticalShift = 1;
+//    //int horizontalShift = 1;
+//
+//    for (int row = 0; row < foregroundImageRecord.height; ++row)
+//    {
+//        for (int col = 0; col < foregroundImageRecord.width; ++col)
+//        {
+//            for (int channel = 0; channel < foregroundImageRecord.channelCount; ++channel)
+//            {
+//                int foregroundIndex = ((row * foregroundImageRecord.width) + col) * foregroundImageRecord.channelCount + channel;
+//
+//                //calc below allows for horizontal and vertical shift: 
+//                int backgroundIndex =
+//                    ((row + verticalShift) * backgroundImageRecord.width +
+//                        (col + horizontalShift)) * backgroundImageRecord.channelCount + channel;
+//                //shifts may result in going out of bounds ...
+//                assert(backgroundIndex < backgroundImageRecord.imageSize);
+//
+//
+//                backgroundImageRecord.imagePtr[backgroundIndex] = foregroundImageRecord.imagePtr[foregroundIndex];
+//
+//                //ptrToBackgroundImageData[backgroundIndex] = ptr_to_foreground_image_data[foregroundIndex];
+//
+//            }
+//        }
+//    }
 //
 //}
 
+
+
+
+
+//to be deleted...
 void moveKnightToE4(ImageRecord& theBoard, const ImageRecord& theKnight)
 {
     //clear prev. pos (later)
@@ -91,10 +73,24 @@ void moveKnightToE4(ImageRecord& theBoard, const ImageRecord& theKnight)
 
 int main()
 {
+    ChessGame theGame{}; 
+    //theGame.drawBoard();
+
+    auto imageFileChessBoardMap = mapImageFileCoordinatesToChessPositions(); 
 
     auto theBoardImage = getImageRecordFromFile("emptyBoard.jpg");
 
     auto arrayOfImages = readImageFilesInFolder("/pieceImages/");
+    
+    //1st, read all piece images into array of images - make sure to name files same as names in Pieces array in ChessGame.h
+
+    //2nd, position the images using both 
+    // 1) the map of positions to coordinates in ImageRecord.h (imageFileChessBoardMap variable above) and 
+    //2) the map of (starting) positions to pieces in ChessGame.h
+    
+
+    cin.get(); 
+
 
     //auto blackRook = getImageRecordFromFile("blackRook.jpg");
     //load lightSquare to cover up a piece that moves from its previous position: 
@@ -103,8 +99,11 @@ int main()
     int verticalShift = 40; // emptyBoard.height / 8; excessive
     int horizontalShift = 40; // = emptyBoard.width / 8;
 
-    const char* filename = "asdfsad.png";
 
+
+    const char* filename = "asdfsad.png";
+    //change current directory to the output images: 
+    std::filesystem::current_path("../outputImages");
 
     for (const auto& image : arrayOfImages)
     {

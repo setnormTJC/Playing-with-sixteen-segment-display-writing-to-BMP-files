@@ -58,7 +58,7 @@ void drawSegments(const vector<Segment>& all16Segments, BMPImage& theImage)
 
 
 
-auto makeASixteenSegmentDisplay(const Point& bottomLeft, const Point& topRight, char chosenChar)
+auto makeASixteenSegmentDisplay(const ImageFileCoordinate& bottomLeft, const ImageFileCoordinate& topRight, char chosenChar)
 {
 	SixteenSegmentDisplay sixteenSegmentDisplay{ bottomLeft, topRight };
 
@@ -173,8 +173,8 @@ int main()
 
 		auto segments = makeASixteenSegmentDisplay
 		(
-			Point{ currentXPosition, currentYPosition },
-			Point{ currentXPosition + FONT_WIDTH, currentYPosition + FONT_HEIGHT },
+			ImageFileCoordinate{ currentXPosition, currentYPosition },
+			ImageFileCoordinate{ currentXPosition + FONT_WIDTH, currentYPosition + FONT_HEIGHT },
 			characterSet.at(counter)
 		);
 
