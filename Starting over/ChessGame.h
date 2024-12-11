@@ -1,5 +1,8 @@
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS //stb image uses something like s_printf
+
+
 #include<vector> 
 #include<array> 
 
@@ -14,6 +17,8 @@
 #include<set> //pieces will be unique (ex: white, queen side knight) 
 
 #include<iomanip>
+
+#include"ImageRecord.h"
 
 using std::vector;
 using std::string;
@@ -47,6 +52,8 @@ struct ChessPosition
 	{
 
 	}
+
+	string convertPositionToString(); 
 };
 
 class Piece
@@ -66,6 +73,8 @@ public:
 	bool isLegalMove(const ChessPosition& positionToMoveFrom, const ChessPosition& positionToMoveTo);
 
 	bool operator < (const Piece& otherPiece) const;
+	bool operator == (const Piece& otherPiece) const; 
+
 	friend std::ostream& operator << (ostream& os, const Piece& piece);
 
 };
@@ -160,8 +169,9 @@ class ChessGame
 {
 
 	/*Use pointer to Piece for polymorphism?*/
-	/*using set rather than vector because pieces might ought to be uniquely identifiable (including PAWNS)*/
-	set<Piece> pieces;
+	/*using vector rather than set to preserve "natural" order of insertion 
+	(from top left - black rook q side, to bottom right - white rook k side)*/
+	vector<Piece> pieces;
 
 	/*A ONE-dimensional array (NOT two)*/
 	array<ChessPosition, 64> boardPositions; 
@@ -183,68 +193,60 @@ class ChessGame
 public:
 
 	/*Initializes board and then draws (and displays) it as an image file*/
-	ChessGame()
-	{
-		generateBoardPositions(); 
-		generatePieces();
-		initializeBoard();
-
-		drawBoard();
-	}
+	ChessGame();
 
 	bool isValidMove(const Piece& piece, const ChessPosition& previousPosition, const ChessPosition& newPosition)
 	{
 		return true; //placeholder for very complicated logic ...
 	}
+
+	/*Update boardState and call drawBoard*/
+	void movePiece();
 	/*
 	@param pieceName - ex: whiteQueenSideKnight
 	@param newPosition - ex: A1, B3, etc.
 	*/
-	void movePiece(const Piece& piece, const ChessPosition& previousPosition, const ChessPosition& newPosition)
-	{
+	//void movePiece(const Piece& piece, const ChessPosition& previousPosition, const ChessPosition& newPosition)
+	//{
 
-		//call Piece's move method? 
-		
+	//	//call Piece's move method? 
+	//	
 
-		//update board if isValid 
-		if (!isValidMove(piece, previousPosition, newPosition))
-		{
-			cout << piece << " not allowed to move to " << newPosition << "\n";
-			return;
-		}
+	//	//update board if isValid 
+	//	if (!isValidMove(piece, previousPosition, newPosition))
+	//	{
+	//		cout << piece << " not allowed to move to " << newPosition << "\n";
+	//		return;
+	//	}
 
-		else
-		{
-			//auto previousPositionIterator = theBoard.find(previousPosition); 
+	//	else
+	//	{
+	//		//auto previousPositionIterator = theBoard.find(previousPosition); 
 
-			if (theBoardState.find(previousPosition) != theBoardState.end())
-			{
-				//remove piece from previous position by setting an "empty piece" there
-				Piece emptyPiece;
-				theBoardState.at(previousPosition) = emptyPiece;
+	//		if (theBoardState.find(previousPosition) != theBoardState.end())
+	//		{
+	//			//remove piece from previous position by setting an "empty piece" there
+	//			Piece emptyPiece;
+	//			theBoardState.at(previousPosition) = emptyPiece;
 
-				//move piece to new position: 
-				//theBoard.at(newPosition) = 
-				//theBoard[newPosition] = &pieceName;
-			}
+	//			//move piece to new position: 
+	//			//theBoard.at(newPosition) = 
+	//			//theBoard[newPosition] = &pieceName;
+	//		}
 
-			else
-			{
-				cout << "Piece " << piece << " not found on board\n";
-			}
+	//		else
+	//		{
+	//			cout << "Piece " << piece << " not found on board\n";
+	//		}
 
-		}
+	//	}
 
-	};
+	//};
 
 
 	/*
 	This should write a BMP image file
 	*/
-	void drawBoard()
-	{
-
-	}
-
+	void drawBoard();
 };
 

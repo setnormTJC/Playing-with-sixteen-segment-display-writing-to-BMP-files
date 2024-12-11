@@ -47,7 +47,7 @@ void addForegroundImageToBgrdImage(int verticalShift, int horizontalShift,
     ImageRecord& backgroundImageRecord,
     const ImageRecord& foregroundImageRecord);
 
-
+/*x and y -> {0, 0} is TOP LEFT */
 struct ImageFileCoordinate
 {
     int x = 0, y = 0;

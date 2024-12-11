@@ -56,6 +56,7 @@ ImageRecord getImageRecordFromFile(const string& filepath)
 
     if (ptrToImageFile == nullptr) {
         cout << filepath << " image not found\n";
+        std::cin.get();
         return ImageRecord{}; //
     }
 
@@ -105,10 +106,14 @@ vector<ImageRecord> readImageFilesInFolder(const std::string& baseFolderName)
         arrayOfImageRecords.push_back(imageRecord);
     }
 
+    std::filesystem::current_path(startingPath); //sets back to starting path 
     return arrayOfImageRecords;
 }
 
-void addForegroundImageToBgrdImage(int verticalShift, int horizontalShift,
+/*
+* @param backGroundImageRecord - will be MODIFIED by this method!
+*/
+void addForegroundImageToBgrdImage(int horizontalShift, int verticalShift,
     ImageRecord& backgroundImageRecord,
     const ImageRecord& foregroundImageRecord)
 {

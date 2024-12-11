@@ -1,12 +1,13 @@
 // Starting over.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+//#define _CRT_SECURE_NO_WARNINGS //stb image uses something like s_printf
+//
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include"stb_image_write.h"
+//#define STB_IMAGE_IMPLEMENTATION
+//#include"stb_image.h"
 #define _CRT_SECURE_NO_WARNINGS //stb image uses something like s_printf
-
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include"stb_image_write.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include"stb_image.h"
 
 #include"ImageRecord.h"
 #include <iostream>
@@ -76,7 +77,7 @@ int main()
     ChessGame theGame{}; 
     //theGame.drawBoard();
 
-    auto imageFileChessBoardMap = mapImageFileCoordinatesToChessPositions(); 
+   /* auto imageFileChessBoardMap = mapImageFileCoordinatesToChessPositions();
 
     auto theBoardImage = getImageRecordFromFile("emptyBoard.jpg");
 
@@ -113,12 +114,12 @@ int main()
         horizontalShift += 90;
 
 
-        stbi_write_png(
-            filename,
-            theBoardImage.width, theBoardImage.height, theBoardImage.channelCount,
-            theBoardImage.imagePtr,
-            theBoardImage.width * theBoardImage.channelCount
-        );
+        //stbi_write_png(
+        //    filename,
+        //    theBoardImage.width, theBoardImage.height, theBoardImage.channelCount,
+        //    theBoardImage.imagePtr,
+        //    theBoardImage.width * theBoardImage.channelCount
+        //);
 
         system(filename);
 
@@ -140,16 +141,16 @@ int main()
     //    }
     //}
 
-    stbi_write_png(
-        filename,
-        theBoardImage.width, theBoardImage.height, theBoardImage.channelCount,
-        theBoardImage.imagePtr,
-        theBoardImage.width * theBoardImage.channelCount
-    );
+    //stbi_write_png(
+    //    filename,
+    //    theBoardImage.width, theBoardImage.height, theBoardImage.channelCount,
+    //    theBoardImage.imagePtr,
+    //    theBoardImage.width * theBoardImage.channelCount
+    //);
 
     system(filename);
 
 
     //std::cin.get();
-
+    */
 }
